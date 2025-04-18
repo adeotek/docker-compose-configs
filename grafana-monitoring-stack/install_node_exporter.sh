@@ -436,24 +436,56 @@ echo -e "Metrics URL: ${YELLOW}http://${IP_ADDR}:${NODE_EXPORTER_PORT}/metrics${
 echo -e "Enabled collectors: ${YELLOW}${COLLECTORS_ENABLED}${NC}"
 echo
 echo -e "${GREEN}To add this host to your Prometheus server, add the following to your prometheus.yml:${NC}"
-echo -e "${YELLOW}Required: Configure Proxmox API Authentication${NC}"
-echo -e "To complete the setup, you must configure authentication by following these steps:"
+echo -e "${YELLOW}  - job_name: 'node'
+    static_configs:
+      - targets: ['${IP_ADDR}:${NODE_EXPORTER_PORT}']
+        labels:
+          instance: '${HOSTNAME}'${NC}"
 echo
-echo -e "1. For password-based authentication:"
-echo -e "   ${YELLOW}sudo cp /etc/node_exporter/proxmox_auth.conf.template /etc/node_exporter/proxmox_auth.conf${NC}"
-echo -e "   ${YELLOW}sudo nano /etc/node_exporter/proxmox_auth.conf${NC}"
-echo -e "   Edit the file to set your Proxmox credentials"
-echo -e "   ${YELLOW}sudo chmod 600 /etc/node_exporter/proxmox_auth.conf${NC}"
-echo
-echo -e "2. OR for token-based authentication (more secure):"
-echo -e "   ${YELLOW}sudo cp /etc/node_exporter/proxmox_token.conf.template /etc/node_exporter/proxmox_token.conf${NC}"
-echo -e "   ${YELLOW}sudo nano /etc/node_exporter/proxmox_token.conf${NC}"
-echo -e "   Edit the file to set your API token details"
-echo -e "   ${YELLOW}sudo chmod 600 /etc/node_exporter/proxmox_token.conf${NC}"
-echo
-echo -e "To test if authentication works:"
-echo -e "   ${YELLOW}sudo /usr/local/bin/proxmox_metrics.py${NC}"
-echo -e "   ${YELLOW}cat ${COLLECTORS_DIR}/proxmox.prom${NC}"
-echo
-echo -e "To view Proxmox metrics in Node Exporter:"
-echo -e "   ${YELLOW}curl http://${IP_ADDR}:${NODE_EXPORTER_PORT}/metrics | grep proxmox${NC}"
+echo -e "${GREEN}To test if Node Exporter is working, run:${NC}"
+echo -e "${YELLOW}curl http://${IP_ADDR}:${NODE_EXPORTER_PORT}/metrics${NC}"
+
+# If temperature monitoring is enabled, add additional information
+if [ "$ENABLE_TEMP" = true ]; then
+    echo
+    echo -e "${GREEN}=== Temperature Monitoring Notes ===${NC}"
+    echo -e "${YELLOW}Temperature monitoring is enabled with thermal_zone and hwmon collectors${NC}"
+    echo -e "- CPU temperatures: Look for metrics with ${YELLOW}node_hwmon_*${NC} or ${YELLOW}node_thermal_zone_*${NC} prefixes"
+    echo -e "- Disk temperatures: Basic temperature data may be available, but comprehensive disk"
+    echo -e "  temperature monitoring requires S.M.A.R.T. monitoring via additional tools"
+    echo
+    echo -e "To view temperature metrics specifically, run:"
+    echo -e "${YELLOW}curl http://${IP_ADDR}:${NODE_EXPORTER_PORT}/metrics | grep -E 'node_hwmon_temp|node_thermal_zone_temp'${NC}"
+fi
+
+# If Proxmox monitoring is enabled, add additional information
+if [ "$ENABLE_PROXMOX" = true ]; then
+    echo
+    echo -e "${GREEN}=== Proxmox Monitoring Notes ===${NC}"
+    echo -e "${YELLOW}Proxmox monitoring is enabled through the textfile collector${NC}"
+    echo -e "- A Python script collects Proxmox metrics and writes them to: ${YELLOW}${COLLECTORS_DIR}/proxmox.prom${NC}"
+    echo -e "- The script runs every minute via cron to update the metrics"
+    echo -e "- Metrics include: node status, VM/container status, resource usage, storage"
+    echo
+    echo -e "${YELLOW}Required: Configure Proxmox API Authentication${NC}"
+    echo -e "To complete the setup, you must configure authentication by following these steps:"
+    echo
+    echo -e "1. For password-based authentication:"
+    echo -e "   ${YELLOW}sudo cp /etc/node_exporter/proxmox_auth.conf.template /etc/node_exporter/proxmox_auth.conf${NC}"
+    echo -e "   ${YELLOW}sudo nano /etc/node_exporter/proxmox_auth.conf${NC}"
+    echo -e "   Edit the file to set your Proxmox credentials"
+    echo -e "   ${YELLOW}sudo chmod 600 /etc/node_exporter/proxmox_auth.conf${NC}"
+    echo
+    echo -e "2. OR for token-based authentication (more secure):"
+    echo -e "   ${YELLOW}sudo cp /etc/node_exporter/proxmox_token.conf.template /etc/node_exporter/proxmox_token.conf${NC}"
+    echo -e "   ${YELLOW}sudo nano /etc/node_exporter/proxmox_token.conf${NC}"
+    echo -e "   Edit the file to set your API token details"
+    echo -e "   ${YELLOW}sudo chmod 600 /etc/node_exporter/proxmox_token.conf${NC}"
+    echo
+    echo -e "To test if authentication works:"
+    echo -e "   ${YELLOW}sudo /usr/local/bin/proxmox_metrics.py${NC}"
+    echo -e "   ${YELLOW}cat ${COLLECTORS_DIR}/proxmox.prom${NC}"
+    echo
+    echo -e "To view Proxmox metrics in Node Exporter:"
+    echo -e "   ${YELLOW}curl http://${IP_ADDR}:${NODE_EXPORTER_PORT}/metrics | grep proxmox${NC}"
+fi

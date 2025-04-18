@@ -135,6 +135,16 @@ GRAFANA_ADMIN_PASSWORD=secure_password_here
 
 ## Installation
 
+### Scripted mode
+
+Run the included init script:
+
+```bash
+./stack_init.sh
+```
+
+### Manual mode
+
 1. Create the necessary directories and set permissions:
    ```bash
    # Create directories
@@ -215,6 +225,23 @@ docker compose up -d
 - Consider implementing HTTPS for Grafana and Prometheus
 - Restrict access to the monitoring stack using a reverse proxy or firewall rules
 - Regularly update all components to the latest versions
+
+## Prometheus Node Exporter
+
+### Installation
+
+```bash
+./install_node_exporter.sh                    # Standard installation
+./install_node_exporter.sh --temp             # Installation with temperature monitoring
+./install_node_exporter.sh --proxmox          # Installation with Proxmox monitoring
+./install_node_exporter.sh --temp --proxmox   # Both temperature and Proxmox monitoring
+```
+
+### Uninstall
+
+```bash
+./uninstall_node_exporter.sh
+```
 
 ## Additional Resources
 
