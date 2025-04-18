@@ -23,20 +23,8 @@ scrape_configs:
     static_configs:
       - targets: ['cadvisor:8080']
 
-  - job_name: 'hlpve1_node'
-    static_configs:
-      - targets: ['192.168.189.21:9100']
-        labels:
-          instance: 'hlpve1'
-
-  - job_name: 'vpn1h1_node'
-    static_configs:
-      - targets: ['192.168.189.51:9100']
-        labels:
-          instance: 'vpn1h1'
-
-  - job_name: 'vpn2h2_node'
-    static_configs:
-      - targets: ['192.168.189.52:9100']
-        labels:
-          instance: 'vpn2h2'
+  # - job_name: 'host_name'
+  #   static_configs:
+  #     - targets: ['192.168.0.111:9100']
+  #       labels:
+  #         instance: 'host_name'
