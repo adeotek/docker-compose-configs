@@ -28,3 +28,11 @@ scrape_configs:
   #     - targets: ['192.168.0.111:9100']
   #       labels:
   #         instance: 'host_name'
+
+  # - job_name: "hass"
+  #   scrape_interval: 60s
+  #   metrics_path: /api/prometheus
+  #   bearer_token: "your.longlived.token"
+  #   scheme: https
+  #   static_configs:
+  #     - targets: ['HOSTNAME:8123']
