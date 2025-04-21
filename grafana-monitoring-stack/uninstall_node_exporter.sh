@@ -48,12 +48,6 @@ systemctl disable node_exporter 2>/dev/null || true
 rm -f /etc/systemd/system/node_exporter.service
 systemctl daemon-reload
 
-# Remove cron job if exists (for Proxmox monitoring)
-if [ -f /etc/cron.d/proxmox-metrics ]; then
-    echo "Removing Proxmox metrics cron job..."
-    rm -f /etc/cron.d/proxmox-metrics
-fi
-
 # Remove firewall rule if ufw is present
 if command -v ufw >/dev/null 2>&1; then
     echo "Removing firewall rules..."
@@ -63,12 +57,6 @@ fi
 # Remove binary files
 echo "Removing Node Exporter binary..."
 rm -f "${INSTALL_DIR}/node_exporter"
-
-# Remove Proxmox metrics collector if exists
-if [ -f /usr/local/bin/proxmox_metrics.py ]; then
-    echo "Removing Proxmox metrics collector..."
-    rm -f /usr/local/bin/proxmox_metrics.py
-fi
 
 # Remove configuration directories
 echo "Removing configuration directories..."
@@ -91,7 +79,6 @@ echo -e "- Node Exporter service and binary"
 echo -e "- Configuration files and directories"
 echo -e "- User and group accounts"
 echo -e "- Firewall rules (if applicable)"
-echo -e "- Proxmox metrics collector (if installed)"
 echo -e "- Scheduled tasks (if configured)"
 echo
 
