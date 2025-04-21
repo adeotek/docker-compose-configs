@@ -19,7 +19,7 @@ NODE_EXPORTER_PORT="9100"
 INSTALL_DIR="/usr/local/bin"
 CONFIG_DIR="/etc/node_exporter"
 COLLECTORS_DIR="/var/lib/node_exporter/textfile_collector"
-COLLECTORS_ENABLED="cpu,diskstats,filesystem,loadavg,meminfo,netdev,netstat,osinfo,stat,time,vmstat,systemd,uname,textfile"
+COLLECTORS_ENABLED="cpu,diskstats,filesystem,loadavg,meminfo,netdev,netstat,os,stat,time,vmstat,systemd,uname,textfile"
 
 # Initialize flags
 ENABLE_TEMP=false

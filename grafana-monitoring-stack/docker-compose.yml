@@ -10,7 +10,7 @@ services:
     command:
       - '--storageDataPath=/victoria-metrics-data'
       - '--httpListenAddr=:8428'
-      - '--retentionPeriod=3m'  # Retention period in months
+      - '--retentionPeriod=3'  # Retention period in months
       - '--memory.allowedPercent=60'
       - '--search.maxUniqueTimeseries=1000000'
       - '--search.maxQueryDuration=30s'
@@ -31,6 +31,7 @@ services:
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=24h'
       - '--web.console.libraries=/etc/prometheus/console_libraries'
       - '--web.console.templates=/etc/prometheus/consoles'
       - '--web.enable-lifecycle'
@@ -100,6 +101,22 @@ services:
       - '--path.procfs=/host/proc'
       - '--path.sysfs=/host/sys'
       - '--path.rootfs=/rootfs'
+      - '--collector.disable-defaults'
+      - '--collector.cpu'
+      - '--collector.diskstats'
+      - '--collector.filesystem'
+      - '--collector.loadavg'
+      - '--collector.meminfo'
+      - '--collector.netdev'
+      - '--collector.netstat'
+      - '--collector.os'
+      - '--collector.stat'
+      - '--collector.time'
+      - '--collector.vmstat'
+      - '--collector.systemd'
+      - '--collector.uname'
+      - '--collector.textfile'
+      - '--collector.textfile.directory=/var/lib/node_exporter/textfile_collector'
       - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($|/)'
     ports:
       - "9100:9100"

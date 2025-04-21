@@ -13,10 +13,6 @@ remote_write:
         regex: 'go_.*'
         action: drop
 
-storage:
-  tsdb:
-    retention.time: 24h  # Minimum local retention for backup purposes
-
 scrape_configs:
   - job_name: 'prometheus'
     static_configs:
@@ -25,18 +21,21 @@ scrape_configs:
   - job_name: 'local_node'
     static_configs:
       - targets: ['node-exporter:9100']
+        labels:
+          instance: 'localhost'
     metrics_path: /metrics
-    scrape_interval: 5s
-    relabel_configs:
-      - source_labels: [__address__]
-        target_label: instance
-        regex: '(.*):.*'
-        replacement: $1
+    # relabel_configs:
+    #   - source_labels: [__address__]
+    #     target_label: instance
+    #     regex: '(.*):.*'
+    #     replacement: $1
 
   - job_name: 'cadvisor'
     scrape_interval: 5s
     static_configs:
       - targets: ['cadvisor:8080']
+        labels:
+          instance: 'docker'
 
   # - job_name: 'host_name'
   #   static_configs:
@@ -51,15 +50,3 @@ scrape_configs:
   #   scheme: https
   #   static_configs:
   #     - targets: ['HOSTNAME:8123']
-
-  # - job_name: 'proxmox'
-  #   scrape_interval: 30s
-  #   static_configs:
-  #     # Add your Proxmox server IPs/hosts below
-  #     - targets: ['proxmox-host:9100']
-  #       labels:
-  #         instance: 'proxmox-node1'
-  #     # Add additional Proxmox nodes as needed
-  #     # - targets: ['proxmox-host2:9100']
-  #     #   labels:
-  #     #     instance: 'proxmox-node2'
