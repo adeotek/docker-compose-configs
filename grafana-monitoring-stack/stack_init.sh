@@ -38,6 +38,14 @@ else
 fi
 chmod 600 "$STAK_ROOT_DIR/.env"
 
+# Create directories and copy config for VictoriaMetrics
+if [ ! -d "$STAK_ROOT_DIR/victoriametrics/data" ]; then
+  mkdir -p "$STAK_ROOT_DIR/victoriametrics/data"
+fi
+# Set permissions for VictoriaMetrics directories
+chown -R 65534:65534 "$STAK_ROOT_DIR/victoriametrics/data"
+chmod -R 755 "$STAK_ROOT_DIR/victoriametrics"
+
 # Create directories and copy config for Prometheus
 if [ ! -f "$STAK_ROOT_DIR/prometheus/config/prometheus.yml" ]; then
   mkdir -p "$STAK_ROOT_DIR/prometheus/config"

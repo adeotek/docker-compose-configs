@@ -1,6 +1,26 @@
 ---
 
 services:
+
+  victoriametrics:
+    image: victoriametrics/victoria-metrics:latest
+    container_name: ${CONTAINER_NAME_PREFIX}victoriametrics
+    volumes:
+      - ./victoriametrics/data:/victoria-metrics-data
+    command:
+      - '--storageDataPath=/victoria-metrics-data'
+      - '--httpListenAddr=:8428'
+      - '--retentionPeriod=3m'  # Retention period in months
+      - '--memory.allowedPercent=60'
+      - '--search.maxUniqueTimeseries=1000000'
+      - '--search.maxQueryDuration=30s'
+      - '--dedup.minScrapeInterval=15s'
+    ports:
+      - "8428:8428"
+    restart: unless-stopped
+    networks:
+      - monitoring
+
   prometheus:
     image: prom/prometheus:latest
     container_name: ${CONTAINER_NAME_PREFIX}prometheus
@@ -19,6 +39,8 @@ services:
     restart: unless-stopped
     networks:
       - monitoring
+    depends_on:
+      - victoriametrics
 
   loki:
     image: grafana/loki:latest
