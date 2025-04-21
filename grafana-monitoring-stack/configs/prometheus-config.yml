@@ -2,6 +2,17 @@ global:
   scrape_interval: 15s
   evaluation_interval: 15s
 
+remote_write:
+  - url: "http://victoriametrics:8428/api/v1/write"
+    queue_config:
+      max_samples_per_send: 10000
+      capacity: 20000
+      max_shards: 30
+    write_relabel_configs:
+      - source_labels: [__name__]
+        regex: 'go_.*'
+        action: drop
+
 scrape_configs:
   - job_name: 'prometheus'
     static_configs:
@@ -10,18 +21,21 @@ scrape_configs:
   - job_name: 'local_node'
     static_configs:
       - targets: ['node-exporter:9100']
+        labels:
+          instance: 'localhost'
     metrics_path: /metrics
-    scrape_interval: 5s
-    relabel_configs:
-      - source_labels: [__address__]
-        target_label: instance
-        regex: '(.*):.*'
-        replacement: $1
+    # relabel_configs:
+    #   - source_labels: [__address__]
+    #     target_label: instance
+    #     regex: '(.*):.*'
+    #     replacement: $1
 
   - job_name: 'cadvisor'
     scrape_interval: 5s
     static_configs:
       - targets: ['cadvisor:8080']
+        labels:
+          instance: 'docker'
 
   # - job_name: 'host_name'
   #   static_configs:
