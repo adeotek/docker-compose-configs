@@ -52,12 +52,12 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "orange",
                 "value": null
               },
               {
-                "color": "red",
-                "value": 604800
+                "color": "green",
+                "value": 86400
               }
             ]
           },
