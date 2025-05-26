@@ -1,0 +1,29 @@
+---
+services:
+
+  uptime-kuma:
+    image: louislam/uptime-kuma:latest
+    container_name: mon--uptime-kuma
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./uptime-kuma/:/app/data/
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      TZ: Europe/Bucharest
+    networks:
+      global-shared-network:
+        aliases:
+          - uptime-kuma
+    restart: unless-stopped
+
+networks:
+
+  global-shared-network:
+    name: services-shared-net
+    driver: bridge
+    external: true
+    ipam:
+      config:
+        - subnet: 172.21.10.1/24
+          ip_range: 172.21.10.1/26
