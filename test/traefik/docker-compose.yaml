@@ -1,0 +1,24 @@
+---
+services:
+
+  traefik:
+    image: traefik:v3.4
+    container_name: sys--traefik
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - ./traefik.yml:/etc/traefik/traefik.yml
+      - ./logs/:/var/log/traefik
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  whoami:
+    # A container that exposes an API to show its IP address
+    image: traefik/whoami
+    container_name: whoami
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.whoami.rule=Host(`whoami.dev1h1.lan`)"
+      # - "traefik.http.services.whoami.loadbalancer.server.port=80"
