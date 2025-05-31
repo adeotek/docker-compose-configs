@@ -8,11 +8,11 @@ services:
     ports:
       - "6380:6379"
     volumes:
+      - /etc/localtime:/etc/localtime:ro
       - ./valkey.conf:/etc/valkey/valkey.conf
       - ./data/:/data
       - ./logs/:/logs
     environment:
-      TZ: Europe/Bucharest
       VALKEY_CONFIG: /etc/valkey/valkey.conf
       VALKEY_LOG_LEVEL: info
       VALKEY_LOG_FORMAT: text

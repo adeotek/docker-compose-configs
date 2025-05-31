@@ -18,6 +18,7 @@ serversTransport:
 # EntryPoints configuration
 ################################################################
 entryPoints:
+  # Internal only (LAN)
   http:
     address: :80
     http:
@@ -27,6 +28,16 @@ entryPoints:
           scheme: https
   https:
     address: :443
+  # External and internal (Internet + LAN)
+  http-external:
+    address: :88
+    http:
+      redirections:
+        entryPoint:
+          to: https
+          scheme: https
+  https-external:
+    address: :444
 
 ################################################################
 # Docker configuration backend
@@ -35,9 +46,8 @@ providers:
   docker:
     endpoint: unix:///var/run/docker.sock
     exposedByDefault: false
-#    defaultRule: Host(`{{ normalize .Name }}.hl.adeotek.cloud`)
   file:
-    filename: /etc/traefik/proxy.yml
+    filename: /etc/traefik/config.yml
 
 ################################################################
 # Certificates Resolvers
@@ -62,15 +72,15 @@ certificatesResolvers:
 ################################################################
 api:
   dashboard: true
-  debug: true # ???
+  debug: false
 #  insecure: true # Default: false
 
 ################################################################
 # Traefik logs configuration
 ################################################################
-log:
-  level: DEBUG # Default: "ERROR"
-  filePath: /var/log/traefik/traefik.log
+#log:
+#  level: DEBUG # Default: "ERROR"
+#  filePath: /var/log/traefik/traefik.log
 #  format: json # Default: "common"
 
 ################################################################

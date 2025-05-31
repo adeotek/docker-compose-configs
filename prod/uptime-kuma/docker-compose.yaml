@@ -4,26 +4,23 @@ services:
   uptime-kuma:
     image: louislam/uptime-kuma:latest
     container_name: mon--uptime-kuma
-    ports:
-      - "3001:3001"
-    volumes:
-      - ./uptime-kuma/:/app/data/
-      - /var/run/docker.sock:/var/run/docker.sock
-    environment:
-      TZ: Europe/Bucharest
-    networks:
-      global-shared-network:
-        aliases:
-          - uptime-kuma
     restart: unless-stopped
+    ports:
+      - 3001:3001
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./data/:/app/data/
+    networks:
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.uptime-kuma.rule=Host(`uptime.hl.adeotek.cloud`)"
+      - "traefik.http.routers.uptime-kuma.entrypoints=https"
+      - "traefik.http.routers.uptime-kuma.tls=true"
+      - "traefik.http.routers.uptime-kuma.middlewares=internal-whitelist@file"
+      - "traefik.http.services.uptime-kuma.loadbalancer.server.port=3001"
 
 networks:
-
-  global-shared-network:
-    name: services-shared-net
-    driver: bridge
+  proxy:
     external: true
-    ipam:
-      config:
-        - subnet: 172.21.10.1/24
-          ip_range: 172.21.10.1/26

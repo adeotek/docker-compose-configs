@@ -9,11 +9,11 @@ services:
       - "6379:6379"
       - "8001:8001"
     volumes:
+      - /etc/localtime:/etc/localtime:ro
       - ./redis.conf:/etc/redis/redis.conf
       - ./data/:/data
       - ./logs/:/logs
     environment:
-      TZ: Europe/Bucharest
       REDIS_CONFIG: /etc/redis/redis.conf
       REDIS_LOG_LEVEL: info
       REDIS_LOG_FORMAT: text
@@ -34,11 +34,11 @@ services:
   #   ports:
   #     - "6378:6379"
   #   volumes:
+  #     - /etc/localtime:/etc/localtime:ro
   #     - ./redis.conf:/etc/redis/redis.conf
   #     - ./data/:/data
   #     - ./logs/:/logs
   #   environment:
-  #     TZ: Europe/Bucharest
   #     REDIS_CONFIG: /etc/redis/redis.conf
   #     REDIS_LOG_LEVEL: info
   #     REDIS_LOG_FORMAT: text

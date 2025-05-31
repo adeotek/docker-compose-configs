@@ -1,0 +1,213 @@
+http:
+
+#region routers
+  routers:
+
+    ansible1h1:
+      entryPoints:
+        - https
+      rule: "Host(`ansible.hl.adeotek.cloud`)"
+      middlewares:
+        - default-headers
+        - https-redirectscheme
+        - internal-whitelist
+      tls: {}
+      service: ansible1h1
+
+    gitea:
+      entryPoints:
+        - https
+      rule: "Host(`git.hl.adeotek.cloud`)"
+      middlewares:
+        - default-headers
+        - https-redirectscheme
+        - internal-whitelist
+      tls: {}
+      service: gitea
+
+    hlnas1:
+      entryPoints:
+        - https
+      rule: "Host(`nas.hl.adeotek.cloud`)"
+      middlewares:
+        - default-headers
+        - https-redirectscheme
+        - internal-whitelist
+      tls: {}
+      service: hlnas1
+
+    hlpve1:
+      entryPoints:
+        - https
+      rule: "Host(`pve1.hl.adeotek.cloud`)"
+      middlewares:
+        - default-headers
+        - https-redirectscheme
+        - internal-whitelist
+      tls: {}
+      service: hlpve1
+
+    immich:
+      entryPoints:
+        - https-external
+      rule: "Host(`photos.adeotek.cloud`)"
+      middlewares:
+        - default-headers
+        - https-redirectscheme
+      tls: {}
+      service: immich
+
+    jellyfin:
+      entryPoints:
+        - https
+      rule: "Host(`jellyfin.hl.adeotek.cloud`)"
+      middlewares:
+        - default-headers
+        - https-redirectscheme
+        - internal-whitelist
+      tls: {}
+      service: jellyfin
+
+    octoprint:
+      entryPoints:
+        - https
+      rule: "Host(`octoprint.hl.adeotek.cloud`)"
+      middlewares:
+        - default-headers
+        - https-redirectscheme
+        - internal-whitelist
+      tls: {}
+      service: octoprint
+
+    piholedr:
+      entryPoints:
+        - https
+      rule: "Host(`pi-hole-dr.hl.adeotek.cloud`)"
+      middlewares:
+        - default-headers
+        - https-redirectscheme
+        - internal-whitelist
+      tls: {}
+      service: piholedr
+
+    piholepr:
+      entryPoints:
+        - https
+      rule: "Host(`pi-hole.hl.adeotek.cloud`)"
+      middlewares:
+        - default-headers
+        - https-redirectscheme
+        - internal-whitelist
+      tls: {}
+      service: piholepr
+
+    qbittorrent:
+      entryPoints:
+        - https
+      rule: "Host(`torrents.hl.adeotek.cloud`)"
+      middlewares:
+        - default-headers
+        - https-redirectscheme
+        - internal-whitelist
+      tls: {}
+      service: qbittorrent
+
+#endregion
+
+#region services
+  services:
+
+    ansible1h1:
+      loadBalancer:
+        servers:
+          - url: "https://192.168.189.50:3000"
+        passHostHeader: true
+
+    gitea:
+      loadBalancer:
+        servers:
+          - url: "https://192.168.189.20:3000"
+        passHostHeader: true
+
+    hlnas1:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.189.20:80"
+        passHostHeader: true
+
+    hlpve1:
+      loadBalancer:
+        servers:
+          - url: "https://192.168.189.21:8006"
+        passHostHeader: true
+
+    immich:
+      loadBalancer:
+        servers:
+          - url: "https://192.168.189.20:2283"
+        passHostHeader: true
+
+    jellyfin:
+      loadBalancer:
+        servers:
+          - url: "https://192.168.189.20:8096"
+        passHostHeader: true
+
+    octoprint:
+      loadBalancer:
+        servers:
+          - url: "https://192.168.189.41:5000"
+        passHostHeader: true
+
+    piholedr:
+      loadBalancer:
+        servers:
+          - url: "https://192.168.189.52:443"
+        passHostHeader: true
+
+    piholepr:
+      loadBalancer:
+        servers:
+          - url: "https://192.168.189.51:443"
+        passHostHeader: true
+
+    qbittorrent:
+      loadBalancer:
+        servers:
+          - url: "https://192.168.189.20:8088"
+        passHostHeader: true
+
+#endregion
+
+  middlewares:
+
+    https-redirectscheme:
+      redirectScheme:
+        scheme: https
+        permanent: true
+
+    default-headers:
+      headers:
+        frameDeny: true
+        browserXssFilter: true
+        contentTypeNosniff: true
+        forceSTSHeader: true
+        stsIncludeSubdomains: true
+        stsPreload: true
+        stsSeconds: 15552000
+        customFrameOptionsValue: SAMEORIGIN
+        customRequestHeaders:
+          X-Forwarded-Proto: https
+
+    internal-whitelist:
+      ipAllowList:
+        sourceRange:
+        - "10.0.0.0/8" # VPN
+        - "192.168.189.0/24" # LAN
+        - "172.0.0.0/8" # Docker networks
+
+    secured:
+      chain:
+        middlewares:
+        - default-whitelist
+        - default-headers

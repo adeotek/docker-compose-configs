@@ -8,11 +8,11 @@ services:
     ports:
       - "6380:6379"
     volumes:
+      - /etc/localtime:/etc/localtime:ro
       - ./valkey.conf:/etc/valkey/valkey.conf
       - ./valkey-data/:/data
       - ./logs/:/logs
     environment:
-      TZ: Europe/Bucharest
       VALKEY_CONFIG: /etc/valkey/valkey.conf
       VALKEY_LOG_LEVEL: info
       VALKEY_LOG_FORMAT: text
@@ -30,11 +30,11 @@ services:
       - "6379:6379"
       - "8001:8001"
     volumes:
+      - /etc/localtime:/etc/localtime:ro
       - ./redis.conf:/etc/redis/redis.conf
       - ./redis-stack-data/:/data
       - ./logs/:/logs
     environment:
-      TZ: Europe/Bucharest
       REDIS_CONFIG: /etc/redis/redis.conf
       REDIS_LOG_LEVEL: info
       REDIS_LOG_FORMAT: text
@@ -51,11 +51,11 @@ services:
     ports:
       - "6378:6379"
     volumes:
+      - /etc/localtime:/etc/localtime:ro
       - ./redis.conf:/etc/redis/redis.conf
       - ./redis-data/:/data
       - ./logs/:/logs
     environment:
-      TZ: Europe/Bucharest
       REDIS_CONFIG: /etc/redis/redis.conf
       REDIS_LOG_LEVEL: info
       REDIS_LOG_FORMAT: text
