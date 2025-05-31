@@ -59,4 +59,5 @@ services:
 
 networks:
   proxy:
+    name: sys--proxy
     external: true

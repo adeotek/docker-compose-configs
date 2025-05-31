@@ -157,4 +157,5 @@ networks:
     name: "${CONTAINER_NAME_PREFIX}monitoring"
     driver: bridge
   proxy:
+    name: sys--proxy
     external: true

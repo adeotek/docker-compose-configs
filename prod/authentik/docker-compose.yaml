@@ -3,6 +3,7 @@ services:
 
   postgresql:
     image: docker.io/library/postgres:16-alpine
+    container_name: "${CONTAINER_NAME_PREFIX}postgres"
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
@@ -24,6 +25,7 @@ services:
 
   redis:
     image: docker.io/library/redis:alpine
+    container_name: "${CONTAINER_NAME_PREFIX}redis"
     command: --save 60 1 --loglevel warning
     restart: unless-stopped
     healthcheck:
@@ -39,6 +41,7 @@ services:
 
   server:
     image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-2025.2.0}
+    container_name: "${CONTAINER_NAME_PREFIX}server"
     restart: unless-stopped
     command: server
     ports:
@@ -73,6 +76,7 @@ services:
 
   worker:
     image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-2025.2.0}
+    container_name: "${CONTAINER_NAME_PREFIX}worker"
     restart: unless-stopped
     command: worker
     # `user: root` and the docker socket volume are optional.
@@ -106,7 +110,9 @@ services:
 
 networks:
   authentik:
+    name: ${CONTAINER_NAME_PREFIX}
   proxy:
+    name: sys--proxy
     external: true
 
 volumes:

@@ -15,7 +15,7 @@ services:
       PGADMIN_DEFAULT_EMAIL: "${PGADMIN_DEFAULT_EMAIL}"
       PGADMIN_DEFAULT_PASSWORD: "${PGADMIN_DEFAULT_PASSWORD}"
     networks:
-      - postgres
+      - private
       - proxy
     labels:
       - "traefik.enable=true"
@@ -40,7 +40,9 @@ services:
       POSTGRES_USER: "${POSTGRES_13_USER}"
       POSTGRES_PASSWORD: "${POSTGRES_13_PASSWORD}"
     networks:
-      - postgres
+      private:
+        aliases:
+          - postgres-16
 
   postgres-16:
     image: postgres:16-bookworm
@@ -57,11 +59,14 @@ services:
       POSTGRES_USER: "${POSTGRES_16_USER}"
       POSTGRES_PASSWORD: "${POSTGRES_16_PASSWORD}"
     networks:
-      - postgres
+      private:
+        aliases:
+          - postgres-16
 
 networks:
-  postgres:
-    name: "${CONTAINER_NAME_PREFIX}postgres"
-    driver: bridge
+  private:
+    name: dbs--private
+    external: true
   proxy:
+    name: sys--proxy
     external: true
