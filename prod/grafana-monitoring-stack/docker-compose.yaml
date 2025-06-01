@@ -17,7 +17,7 @@ services:
       - 8428:8428
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ./victoriametrics/data:/victoria-metrics-data
+      - ./data/victoriametrics:/victoria-metrics-data
     networks:
       - monitoring
 
@@ -27,7 +27,7 @@ services:
     restart: unless-stopped
     user: "65534:65534"  # nobody:nobody user
     command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--config.file=/etc/prometheus/config.yml'
       - '--storage.tsdb.path=/prometheus'
       - '--storage.tsdb.retention.time=24h'
       - '--web.console.libraries=/etc/prometheus/console_libraries'
@@ -37,8 +37,8 @@ services:
       - 9090:9090
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ./prometheus/config:/etc/prometheus
-      - ./prometheus/data:/prometheus
+      - ./config/prometheus:/etc/prometheus
+      - ./data/prometheus:/prometheus
     networks:
       - monitoring
     depends_on:
@@ -49,25 +49,26 @@ services:
     container_name: "${CONTAINER_NAME_PREFIX}loki"
     restart: unless-stopped
     user: "10001:10001"  # Use the Loki user
-    command: -config.file=/etc/loki/loki-config.yml
+    command: -config.file=/etc/loki/config.yml
     ports:
       - 3100:3100
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ./loki/config:/etc/loki
-      - ./loki/data:/loki
+      - ./config/loki:/etc/loki
+      - ./data/loki:/loki
     networks:
       - monitoring
 
   promtail:
     image: grafana/promtail:latest
     container_name: "${CONTAINER_NAME_PREFIX}promtail"
-    volumes:
-      - ./promtail/config:/etc/promtail
-      - /var/log:/var/log
-      - /var/lib/docker/containers:/var/lib/docker/containers
-    command: -config.file=/etc/promtail/promtail-config.yml
     restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/log:/var/log:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - ./config/promtail:/etc/promtail
+    command: -config.file=/etc/promtail/config.yml
     networks:
       - monitoring
     depends_on:
@@ -81,8 +82,8 @@ services:
       - 3000:3000
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ./grafana/data:/var/lib/grafana
-      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./config/grafana:/etc/grafana/provisioning
+      - ./data/grafana:/var/lib/grafana
     environment:
       - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
@@ -95,7 +96,7 @@ services:
       - loki
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.grafana.rule=Host(`grafana.hl.adeotek.cloud`)"
+      - "traefik.http.routers.grafana.rule=Host(`grafana.example.com`)"
       - "traefik.http.routers.grafana.entrypoints=https"
       - "traefik.http.routers.grafana.tls=true"
       - "traefik.http.routers.grafana.middlewares=internal-whitelist@file"
@@ -157,5 +158,5 @@ networks:
     name: "${CONTAINER_NAME_PREFIX}monitoring"
     driver: bridge
   proxy:
-    name: sys--proxy
+    name: proxy
     external: true

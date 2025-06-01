@@ -6,11 +6,11 @@ services:
     container_name: "${CONTAINER_NAME_PREFIX}pgadmin4"
     restart: unless-stopped
     ports:
-      - 8082:80
+      - 80:80
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ./config/pgadmin4_config.py:/pgadmin4/config_local.py
-      - ./data/pgadmin4/:/var/lib/pgadmin
+      - ./config/pgadmin4_config_local.py:/pgadmin4/config_local.py
+      - ./data/pgadmin4:/var/lib/pgadmin
     environment:
       PGADMIN_DEFAULT_EMAIL: "${PGADMIN_DEFAULT_EMAIL}"
       PGADMIN_DEFAULT_PASSWORD: "${PGADMIN_DEFAULT_PASSWORD}"
@@ -19,7 +19,7 @@ services:
       - proxy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.pgadmin4.rule=Host(`pgadmin4.hl.adeotek.cloud`)"
+      - "traefik.http.routers.pgadmin4.rule=Host(`pgadmin4.example.com`)"
       - "traefik.http.routers.pgadmin4.entrypoints=https"
       - "traefik.http.routers.pgadmin4.tls=true"
       - "traefik.http.routers.pgadmin4.middlewares=internal-whitelist@file"
@@ -33,7 +33,7 @@ services:
       - 5432:5432
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ./data/postgres-13/:/var/lib/postgresql/data
+      - ./data/postgres-13:/var/lib/postgresql/data
     environment:
       PGDATA: /var/lib/postgresql/data
       LANG: en_US.utf8
@@ -42,7 +42,7 @@ services:
     networks:
       private:
         aliases:
-          - postgres-16
+          - postgres-13
 
   postgres-16:
     image: postgres:16-bookworm
@@ -52,7 +52,7 @@ services:
       - 5434:5432
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ./data/postgres-16/:/var/lib/postgresql/data
+      - ./data/postgres-16:/var/lib/postgresql/data
     environment:
       PGDATA: /var/lib/postgresql/data
       LANG: en_US.utf8
@@ -65,8 +65,8 @@ services:
 
 networks:
   private:
-    name: dbs--private
+    name: private
     external: true
   proxy:
-    name: sys--proxy
+    name: proxy
     external: true

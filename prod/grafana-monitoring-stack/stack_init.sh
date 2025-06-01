@@ -6,10 +6,10 @@ set -e
 STAK_ROOT_DIR="/opt/monitoring"
 
 if [ -z "$1" ]; then
-  echo "${YELLOW}Using default stack root directory: ${NC}$STAK_ROOT_DIR"
+  echo "${YELLOW}Using default stack root directory: ${NC}$STACK_ROOT_DIR"
 else
   STAK_ROOT_DIR="${1%/}"
-  echo "${YELLOW}Using provided stack root directory: ${NC}$STAK_ROOT_DIR"
+  echo "${YELLOW}Using provided stack root directory: ${NC}$STACK_ROOT_DIR"
 fi
 
 # Colors for output
@@ -25,83 +25,83 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 
 # Create root directory and copy docker compose and env files
-mkdir -p "$STAK_ROOT_DIR"
-if [ ! -f "$STAK_ROOT_DIR/docker-compose.yml" ]; then
-  cp docker-compose.yml "$STAK_ROOT_DIR"
+mkdir -p "$STACK_ROOT_DIR"
+if [ ! -f "$STACK_ROOT_DIR/docker-compose.yml" ]; then
+  cp docker-compose.yml "$STACK_ROOT_DIR"
 else
-  echo -e "${YELLOW}docker-compose.yml already exists in $STAK_ROOT_DIR. Skipping copy.${NC}"
+  echo -e "${YELLOW}docker-compose.yml already exists in $STACK_ROOT_DIR. Skipping copy.${NC}"
 fi
-if [ ! -f "$STAK_ROOT_DIR/.env" ]; then
-  cp .env.sample "$STAK_ROOT_DIR/.env"
+if [ ! -f "$STACK_ROOT_DIR/.env" ]; then
+  cp .env.sample "$STACK_ROOT_DIR/.env"
 else
-  echo -e "${YELLOW}.env already exists in $STAK_ROOT_DIR. Skipping copy.${NC}"
+  echo -e "${YELLOW}.env already exists in $STACK_ROOT_DIR. Skipping copy.${NC}"
 fi
-chmod 600 "$STAK_ROOT_DIR/.env"
+chmod 600 "$STACK_ROOT_DIR/.env"
 
 # Create directories and copy config for VictoriaMetrics
-if [ ! -d "$STAK_ROOT_DIR/victoriametrics/data" ]; then
-  mkdir -p "$STAK_ROOT_DIR/victoriametrics/data"
+if [ ! -d "$STACK_ROOT_DIR/data/victoriametrics" ]; then
+  mkdir -p "$STACK_ROOT_DIR/data/victoriametrics"
 fi
 # Set permissions for VictoriaMetrics directories
-chown -R 65534:65534 "$STAK_ROOT_DIR/victoriametrics/data"
-chmod -R 755 "$STAK_ROOT_DIR/victoriametrics"
+chown -R 65534:65534 "$STACK_ROOT_DIR/data/victoriametrics"
+chmod -R 755 "$STACK_ROOT_DIR/victoriametrics"
 
 # Create directories and copy config for Prometheus
-if [ ! -f "$STAK_ROOT_DIR/prometheus/config/prometheus.yml" ]; then
-  mkdir -p "$STAK_ROOT_DIR/prometheus/config"
-  mkdir -p "$STAK_ROOT_DIR/prometheus/data"
-  cp configs/prometheus-config.yml "$STAK_ROOT_DIR/prometheus/config/prometheus.yml"
+if [ ! -f "$STACK_ROOT_DIR/config/prometheus/prometheus.yml" ]; then
+  mkdir -p "$STACK_ROOT_DIR/config/prometheus"
+  mkdir -p "$STACK_ROOT_DIR/data/prometheus"
+  cp configs/prometheus-config.yml "$STACK_ROOT_DIR/config/prometheus/config.yml"
 else
-  echo -e "${YELLOW}prometheus.yml already exists in $STAK_ROOT_DIR/prometheus/config. Skipping copy.${NC}"
+  echo -e "${YELLOW}prometheus.yml already exists in $STACK_ROOT_DIR/config/prometheus. Skipping copy.${NC}"
 fi
 # Set permissions for Prometheus directories
-chown -R 65534:65534 "$STAK_ROOT_DIR/prometheus/data"
-chown -R 65534:65534 "$STAK_ROOT_DIR/prometheus/config"
-chmod -R 755 "$STAK_ROOT_DIR/prometheus"
+chown -R 65534:65534 "$STACK_ROOT_DIR/data/prometheus"
+chown -R 65534:65534 "$STACK_ROOT_DIR/config/prometheus"
+chmod -R 755 "$STACK_ROOT_DIR/prometheus"
 
 # Create directories and copy config for Loki
-if [ ! -f "$STAK_ROOT_DIR/loki/config/loki-config.yml" ]; then
-  mkdir -p "$STAK_ROOT_DIR/loki/config"
-  mkdir -p "$STAK_ROOT_DIR/loki/data"
-  cp configs/loki-config.yml "$STAK_ROOT_DIR/loki/config/loki-config.yml"
+if [ ! -f "$STACK_ROOT_DIR/config/loki/loki-config.yml" ]; then
+  mkdir -p "$STACK_ROOT_DIR/config/loki"
+  mkdir -p "$STACK_ROOT_DIR/data/loki"
+  cp configs/loki-config.yml "$STACK_ROOT_DIR/config/loki/config.yml"
 else
-  echo -e "${YELLOW}loki-config.yml already exists in $STAK_ROOT_DIR/loki/config. Skipping copy.${NC}"
+  echo -e "${YELLOW}loki-config.yml already exists in $STACK_ROOT_DIR/config/loki. Skipping copy.${NC}"
 fi
 # Set permissions for Loki directories
-chown -R 10001:10001 "$STAK_ROOT_DIR/loki/data"
-chown -R 10001:10001 "$STAK_ROOT_DIR/loki/config"
-chmod -R 755 "$STAK_ROOT_DIR/loki"
+chown -R 10001:10001 "$STACK_ROOT_DIR/data/loki"
+chown -R 10001:10001 "$STACK_ROOT_DIR/config/loki"
+chmod -R 755 "$STACK_ROOT_DIR/loki"
 
 # Create directories and copy config for Promtail
-if [ ! -f "$STAK_ROOT_DIR/promtail/config/promtail-config.yml" ]; then
-  mkdir -p "$STAK_ROOT_DIR/promtail/config"
-  cp configs/promtail-config.yml "$STAK_ROOT_DIR/promtail/config/promtail-config.yml"
+if [ ! -f "$STACK_ROOT_DIR/config/promtail/promtail-config.yml" ]; then
+  mkdir -p "$STACK_ROOT_DIR/config/promtail"
+  cp configs/promtail-config.yml "$STACK_ROOT_DIR/config/promtail/config.yml"
 else
-  echo -e "${YELLOW}promtail-config.yml already exists in $STAK_ROOT_DIR/promtail/config. Skipping copy.${NC}"
+  echo -e "${YELLOW}promtail-config.yml already exists in $STACK_ROOT_DIR/config/promtail. Skipping copy.${NC}"
 fi
 # Set permissions for Promtail directories
 chmod -R 755 /opt/monitoring/promtail
 
 # Create directories and copy config for Grafana
-mkdir -p "$STAK_ROOT_DIR/grafana/data"
-mkdir -p "$STAK_ROOT_DIR/grafana/provisioning/{dashboards,datasources}"
-mkdir -p "$STAK_ROOT_DIR/grafana/provisioning/dashboards/{homelab,monitoring}"
-if [ ! -f "$STAK_ROOT_DIR/grafana/provisioning/dashboards/dashboards.yml" ]; then
-  cp configs/grafana-provisioning/dashboards/dashboards.yml "$STAK_ROOT_DIR/grafana/provisioning/dashboards/dashboards.yml"
+mkdir -p "$STACK_ROOT_DIR/data/grafana"
+mkdir -p "$STACK_ROOT_DIR/config/grafana/{dashboards,datasources}"
+mkdir -p "$STACK_ROOT_DIR/config/grafana/dashboards/{homelab,monitoring}"
+if [ ! -f "$STACK_ROOT_DIR/config/grafana/dashboards/dashboards.yml" ]; then
+  cp configs/grafana-provisioning/dashboards/dashboards.yml "$STACK_ROOT_DIR/grafana/config/dashboards/dashboards.yml"
 else
-  echo -e "${YELLOW}dashboards.yml already exists in $STAK_ROOT_DIR/grafana/provisioning/dashboards. Skipping copy.${NC}"
+  echo -e "${YELLOW}dashboards.yml already exists in $STACK_ROOT_DIR/grafana/config/dashboards. Skipping copy.${NC}"
 fi
-if [ ! -f "$STAK_ROOT_DIR/grafana/provisioning/dashboards/homelab/cadvisor-dashboard.json" ]; then
-  cp configs/grafana-provisioning/dashboards/homelab/cadvisor-dashboard.json "$STAK_ROOT_DIR/grafana/provisioning/dashboards/homelab/cadvisor-dashboard.json"
+if [ ! -f "$STACK_ROOT_DIR/grafana/config/dashboards/homelab/cadvisor-dashboard.json" ]; then
+  cp configs/grafana-provisioning/dashboards/homelab/cadvisor-dashboard.json "$STACK_ROOT_DIR/grafana/config/dashboards/homelab/cadvisor-dashboard.json"
 fi
-if [ ! -f "$STAK_ROOT_DIR/grafana/provisioning/dashboards/homelab/node-exporter-dashboard.json" ]; then
-  cp configs/grafana-provisioning/dashboards/homelab/node-exporter-dashboard.json "$STAK_ROOT_DIR/grafana/provisioning/dashboards/homelab/node-exporter-dashboard.json"
+if [ ! -f "$STACK_ROOT_DIR/grafana/config/dashboards/homelab/node-exporter-dashboard.json" ]; then
+  cp configs/grafana-provisioning/dashboards/homelab/node-exporter-dashboard.json "$STACK_ROOT_DIR/grafana/config/dashboards/homelab/node-exporter-dashboard.json"
 fi
-if [ ! -f "$STAK_ROOT_DIR/grafana/provisioning/datasources/datasources.yml" ]; then
-  cp configs/grafana-provisioning/datasources/datasources.yml "$STAK_ROOT_DIR/grafana/provisioning/datasources/datasources.yml"
+if [ ! -f "$STACK_ROOT_DIR/grafana/config/datasources/datasources.yml" ]; then
+  cp configs/grafana-provisioning/datasources/datasources.yml "$STACK_ROOT_DIR/grafana/config/datasources/datasources.yml"
 else
-  echo -e "${YELLOW}datasources.yml already exists in $STAK_ROOT_DIR/grafana/provisioning/datasources. Skipping copy.${NC}"
+  echo -e "${YELLOW}datasources.yml already exists in $STACK_ROOT_DIR/grafana/config/datasources. Skipping copy.${NC}"
 fi
 # Set permissions for Grafana directories
-chown -R 472:472 "$STAK_ROOT_DIR/grafana"
-chmod -R 755 "$STAK_ROOT_DIR/grafana"
+chown -R 472:472 "$STACK_ROOT_DIR/grafana"
+chmod -R 755 "$STACK_ROOT_DIR/grafana"

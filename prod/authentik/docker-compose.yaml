@@ -69,7 +69,7 @@ services:
         condition: service_healthy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.authentik.rule=Host(`identity.adeotek.cloud`)"
+      - "traefik.http.routers.authentik.rule=Host(`identity.example.com`)"
       - "traefik.http.routers.authentik.entrypoints=https-external"
       - "traefik.http.routers.authentik.tls=true"
       - "traefik.http.services.authentik.loadbalancer.server.port=${COMPOSE_PORT_HTTP:-9000}:9000"
@@ -112,7 +112,7 @@ networks:
   authentik:
     name: ${CONTAINER_NAME_PREFIX}
   proxy:
-    name: sys--proxy
+    name: proxy
     external: true
 
 volumes:

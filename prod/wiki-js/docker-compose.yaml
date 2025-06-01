@@ -3,13 +3,13 @@ services:
 
   wiki-js:
     image: requarks/wiki:2
-    container_name: app--wiki-js
+    container_name: wiki-js
     restart: unless-stopped
     ports:
-      - 5080:3000
+      - 3000:3000
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ./data/:/etc/wiki/
+      - ./data:/etc/wiki
     environment:
       DB_TYPE: "${DB_TYPE:-postgres}"
       DB_HOST: "${DB_HOST}"
@@ -21,7 +21,7 @@ services:
       - proxy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.wiki-js.rule=Host(`wiki.hl.adeotek.cloud`)"
+      - "traefik.http.routers.wiki-js.rule=Host(`wiki.example.com`)"
       - "traefik.http.routers.wiki-js.entrypoints=https"
       - "traefik.http.routers.wiki-js.tls=true"
       - "traefik.http.routers.wiki-js.middlewares=internal-whitelist@file"
@@ -29,5 +29,5 @@ services:
 
 networks:
   proxy:
-    name: sys--proxy
+    name: proxy
     external: true
