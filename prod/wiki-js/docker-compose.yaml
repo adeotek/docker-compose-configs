@@ -1,0 +1,33 @@
+---
+services:
+
+  wiki-js:
+    image: requarks/wiki:2
+    container_name: wiki-js
+    restart: unless-stopped
+    ports:
+      - 3000:3000
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./data:/etc/wiki
+    environment:
+      DB_TYPE: "${DB_TYPE:-postgres}"
+      DB_HOST: "${DB_HOST}"
+      DB_PORT: "${DB_PORT:-5432}"
+      DB_USER: "${DB_USER}"
+      DB_PASS: "${DB_PASS}"
+      DB_NAME: "${DB_NAME:-wiki_js}"
+    networks:
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.wiki-js.rule=Host(`wiki.example.com`)"
+      - "traefik.http.routers.wiki-js.entrypoints=https"
+      - "traefik.http.routers.wiki-js.tls=true"
+      - "traefik.http.routers.wiki-js.middlewares=internal-whitelist@file"
+      - "traefik.http.services.wiki-js.loadbalancer.server.port=3000"
+
+networks:
+  proxy:
+    name: proxy
+    external: true

@@ -4,3 +4,9 @@
 .fleet
 
 .env
+
+**/logs/
+**/data/
+**/redis-data/
+**/redis-stack-data/
+**/valkey-data/

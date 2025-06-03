@@ -1,0 +1,37 @@
+---
+
+services:
+  valkey:
+    image: valkey/valkey:latest
+    container_name: valkey
+    restart: unless-stopped
+    ports:
+      - "6380:6379"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./valkey.conf:/etc/valkey/valkey.conf
+      - ./data/:/data
+      - ./logs/:/logs
+    environment:
+      VALKEY_CONFIG: /etc/valkey/valkey.conf
+      VALKEY_LOG_LEVEL: info
+      VALKEY_LOG_FORMAT: text
+      VALKEY_LOG_FILE: /logs/valkey.log
+      VALKEY_LOG_ROTATE: true
+      VALKEY_LOG_ROTATE_MAX_SIZE: 10M
+      VALKEY_LOG_ROTATE_MAX_BACKUPS: 3
+      VALKEY_LOG_ROTATE_MAX_AGE: 30
+    # networks:
+    #   custom_network:
+    #     aliases:
+    #       - valkey
+
+# networks:
+#   custom_network:
+#     name: custom_network
+#     driver: bridge
+#     external: true
+#     ipam:
+#       config:
+#         subnet: 10.0.0/24
+#         ip_range: 10.0.0/24

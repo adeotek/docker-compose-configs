@@ -1,0 +1,28 @@
+---
+services:
+
+  portainer-ee:
+    image: portainer/portainer-ee:latest
+    container_name: portainer-ee
+    restart: unless-stopped
+    ports:
+      - 8000:8000
+      - 9443:9443
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./data:/data
+    networks:
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.portainer-ee.rule=Host(`portainer.example.com`)"
+      - "traefik.http.routers.portainer-ee.entrypoints=https"
+      - "traefik.http.routers.portainer-ee.tls=true"
+      - "traefik.http.routers.portainer-ee.middlewares=internal-whitelist@file"
+      - "traefik.http.services.portainer-ee.loadbalancer.server.port=9443"
+
+networks:
+  proxy:
+    name: proxy
+    external: true

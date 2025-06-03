@@ -8,6 +8,7 @@ This repository contains a collection of pre-configured Docker Compose setups fo
 
 A modern Identity Provider focused on flexibility and versatility.
 
+- **Category**: `prod`
 - **Directory**: `/authentik`
 - **Services**:
   - PostgreSQL database
@@ -22,6 +23,7 @@ A modern Identity Provider focused on flexibility and versatility.
 
 A complete monitoring solution with metrics, logs, and visualization.
 
+- **Category**: `prod`
 - **Directory**: `/grafana-monitoring-stack`
 - **Services**:
   - Prometheus (metrics database)

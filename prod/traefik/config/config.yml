@@ -1,0 +1,78 @@
+http:
+
+#region routers
+  routers:
+
+    internal-router:
+      entryPoints:
+        - https
+      rule: "Host(`smaple1.example.com`)"
+      middlewares:
+        - default-headers
+        - https-redirectscheme
+        - internal-whitelist
+      tls: {}
+      service: internal-service
+
+    external-router:
+      entryPoints:
+        - https-external
+      rule: "Host(`sample2.example.com`)"
+      middlewares:
+        - default-headers
+        - https-redirectscheme
+        - internal-whitelist
+      tls: {}
+      service: external-service
+
+#endregion
+
+#region services
+  services:
+
+    internal-service:
+      loadBalancer:
+        servers:
+          - url: "https://192.168.1.10:80"
+        passHostHeader: true
+
+    external-service:
+      loadBalancer:
+        servers:
+          - url: "https://192.168.1.20:443"
+        passHostHeader: true
+
+#endregion
+
+  middlewares:
+
+    https-redirectscheme:
+      redirectScheme:
+        scheme: https
+        permanent: true
+
+    default-headers:
+      headers:
+        frameDeny: true
+        browserXssFilter: true
+        contentTypeNosniff: true
+        forceSTSHeader: true
+        stsIncludeSubdomains: true
+        stsPreload: true
+        stsSeconds: 15552000
+        customFrameOptionsValue: SAMEORIGIN
+        customRequestHeaders:
+          X-Forwarded-Proto: https
+
+    internal-whitelist:
+      ipAllowList:
+        sourceRange:
+        - "10.0.0.0/8" # VPN
+        - "192.168.1.0/24" # LAN
+        - "172.0.0.0/8" # Docker networks
+
+    secured:
+      chain:
+        middlewares:
+        - default-whitelist
+        - default-headers

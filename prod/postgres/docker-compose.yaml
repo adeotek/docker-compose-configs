@@ -1,0 +1,72 @@
+---
+services:
+
+  pgadmin4:
+    image: dpage/pgadmin4:latest
+    container_name: "${CONTAINER_NAME_PREFIX}pgadmin4"
+    restart: unless-stopped
+    ports:
+      - 80:80
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./config/pgadmin4_config_local.py:/pgadmin4/config_local.py
+      - ./data/pgadmin4:/var/lib/pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "${PGADMIN_DEFAULT_EMAIL}"
+      PGADMIN_DEFAULT_PASSWORD: "${PGADMIN_DEFAULT_PASSWORD}"
+    networks:
+      - private
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.pgadmin4.rule=Host(`pgadmin4.example.com`)"
+      - "traefik.http.routers.pgadmin4.entrypoints=https"
+      - "traefik.http.routers.pgadmin4.tls=true"
+      - "traefik.http.routers.pgadmin4.middlewares=internal-whitelist@file"
+      - "traefik.http.services.pgadmin4.loadbalancer.server.port=80"
+
+  postgres-13:
+    image: postgres:13
+    container_name: "${CONTAINER_NAME_PREFIX}postgres-13"
+    restart: unless-stopped
+    ports:
+      - 5432:5432
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./data/postgres-13:/var/lib/postgresql/data
+    environment:
+      PGDATA: /var/lib/postgresql/data
+      LANG: en_US.utf8
+      POSTGRES_USER: "${POSTGRES_13_USER}"
+      POSTGRES_PASSWORD: "${POSTGRES_13_PASSWORD}"
+    networks:
+      private:
+        aliases:
+          - postgres-13
+
+  postgres-16:
+    image: postgres:16-bookworm
+    container_name: "${CONTAINER_NAME_PREFIX}postgres-16"
+    restart: unless-stopped
+    ports:
+      - 5434:5432
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./data/postgres-16:/var/lib/postgresql/data
+    environment:
+      PGDATA: /var/lib/postgresql/data
+      LANG: en_US.utf8
+      POSTGRES_USER: "${POSTGRES_16_USER}"
+      POSTGRES_PASSWORD: "${POSTGRES_16_PASSWORD}"
+    networks:
+      private:
+        aliases:
+          - postgres-16
+
+networks:
+  private:
+    name: private
+    external: true
+  proxy:
+    name: proxy
+    external: true
