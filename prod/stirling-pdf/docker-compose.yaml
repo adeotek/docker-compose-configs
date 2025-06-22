@@ -1,0 +1,34 @@
+---
+services:
+
+  stirling-pdf:
+    image: docker.stirlingpdf.com/stirlingtools/stirling-pdf:latest
+    container_name: app--stirling-pdf
+    restart: unless-stopped
+    ports:
+      - '8080:8080'
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./data/trainingData:/usr/share/tessdata # Required for extra OCR languages
+      - ./data/extraConfigs:/configs
+      - ./data/customFiles:/customFiles/
+      - ./data/logs:/logs/
+      - ./data/pipeline:/pipeline/
+    environment:
+      - DOCKER_ENABLE_SECURITY=false
+      - LANGS=en_GB
+    networks:
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=sys--proxy"
+      - "traefik.http.routers.stirling-pdf.rule=Host(`pdf.example.com`)"
+      - "traefik.http.routers.stirling-pdf.entrypoints=https"
+      - "traefik.http.routers.stirling-pdf.tls=true"
+      - "traefik.http.routers.stirling-pdf.middlewares=internal-whitelist@file"
+      - "traefik.http.services.stirling-pdf.loadbalancer.server.port=8080"
+
+networks:
+  proxy:
+    name: sys--proxy
+    external: true
