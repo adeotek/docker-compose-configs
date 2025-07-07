@@ -3,47 +3,48 @@ services:
 
   docmost:
     image: docmost/docmost:latest
-    container_name: dockmost-app
+    container_name: docmost-app
     restart: unless-stopped
     ports:
       - "3000:3000"
     volumes:
       - docmost:/app/data/storage
     environment:
-      APP_URL: 'http://localhost:3000'
+      APP_URL: 'http://docmost.example.com'
       APP_SECRET: '${APP_SECRET}'
-      DATABASE_URL: 'postgresql://${DB_USER:-docmost}:${DB_PASS}@db:5432/docmost?schema=public'
-      REDIS_URL: 'redis://redis:6379'
+      DATABASE_URL: 'postgresql://${DB_USER:-docmost}:${DB_PASS}@docmost-postgres:5432/${DB_NAME:-docmost}?schema=public'
+      REDIS_URL: 'redis://docmost-redis:6379'
     networks:
       - docmost
       - proxy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.dockmost.rule=Host(`dockmost.example.com`)"
-      - "traefik.http.routers.dockmost.entrypoints=https"
-      - "traefik.http.routers.dockmost.tls=true"
-      - "traefik.http.routers.dockmost.middlewares=internal-whitelist@file"
-      - "traefik.http.services.dockmost.loadbalancer.server.port=3000"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.docmost.rule=Host(`docmost.example.com`)"
+      - "traefik.http.routers.docmost.entrypoints=https"
+      - "traefik.http.routers.docmost.tls=true"
+      - "traefik.http.routers.docmost.middlewares=internal-whitelist@file"
+      - "traefik.http.services.docmost.loadbalancer.server.port=3000"
     depends_on:
       - db
       - redis
 
   db:
     image: postgres:16-alpine
-    container_name: dockmost-postgres
+    container_name: docmost-postgres
     restart: unless-stopped
     volumes:
       - db_data:/var/lib/postgresql/data
     environment:
-      POSTGRES_DB: docmost
-      POSTGRES_USER: docmost
-      POSTGRES_PASSWORD: STRONG_DB_PASSWORD
+      POSTGRES_DB: ${DB_NAME:-docmost}
+      POSTGRES_USER: ${DB_USER:-docmost}
+      POSTGRES_PASSWORD: ${DB_PASS}
     networks:
       - docmost
 
   redis:
     image: valkey/valkey:8-alpine
-    container_name: dockmost-redis
+    container_name: docmost-redis
     restart: unless-stopped
     volumes:
       - redis_data:/data
