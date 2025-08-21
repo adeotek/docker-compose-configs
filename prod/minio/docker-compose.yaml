@@ -1,0 +1,19 @@
+---
+services:
+
+  minio:
+    image: quay.io/minio/minio:${MINIO_IMAGE_VERSION}
+    container_name: ${MINIO_NAME_PREFIX}minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    ports:
+      - "9768:9000"
+      - "9769:9001"
+    volumes:
+      - ${MINIO_CONFIG_PATH}:/root/.minio
+      - ${MINIO_STORAGE_PATH}:/data
+    environment:
+      MINIO_BROWSER_REDIRECT_URL: ${MINIO_SERVER_URL}
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    network_mode: bridge

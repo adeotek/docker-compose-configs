@@ -10,3 +10,5 @@
 **/redis-data/
 **/redis-stack-data/
 **/valkey-data/
+**/minio/config/
+**/minio/storage/
